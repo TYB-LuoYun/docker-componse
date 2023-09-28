@@ -1,0 +1,27 @@
+version : '3.8'
+
+services:
+  ryu-pay:  
+    image: ryu-pay  # 构建镜像名
+    container_name: ryu-pay   # 容器名称
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        jarName: ryu-pay
+        jarDir: services/ryu-pay
+    ports:
+      - "${RYU_PAY_PORT:-3394}:3394" 
+    network_mode: host  #网络，使通信宿主机
+    env_file: ./.env  # 环境文件
+    volumes:
+      - ./services/ryu-pay/application.yml:/app/jar/application.yml # 挂载外部配置文件到容器的 /app 目录
+      - ./services/ryu-pay/bootstrap.yml:/app/jar/bootstrap.yml
+      - ${LOG_DIR:-./logs}/ryu-pay:/app/jar/logs    #将日志目录与外部的挂载
+    environment:
+      - TZ=Asia/Shanghai
+    command:
+    #  - -Xms1024m
+    #  - -Xmx1024m
+      - --spring.config.location=/app/jar/application.yml,/app/jar/bootstrap.yml   #commond会附加到entryponint当中
+  

@@ -1,0 +1,20 @@
+version: "3.3"
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.9.7-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 25672:25672
+      - 61613:61613
+    environment:
+       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest} 
+    volumes:
+#      - /data/rabbitmq/logs:/var/log/rabbitmq  #这个必须要加权限 sudo chmod 777 /data/rabbitmq/logs
+      - /data/rabbitmq/data:/var/lib/rabbitmq  # 持久化RabbitMQ数据
+#      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf  #修改密码暂时没有效果
+    hostname: master #指定主机名称很重要后面集群使用 
+#docker run -d --hostname rabbit --name rabbit -e RABBITMQ_DEFAULT_USER="rabbituser" -e RABBITMQ_DEFAULT_PASS="u6hCwUvd0w7uwjloHEPgVhwej65HTw" -p 15672:15672 -p 5672:5672 -p 25672:25672 -p 61613:61613 -p 1883:1883 rabbitmq:management

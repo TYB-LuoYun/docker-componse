@@ -1,0 +1,145 @@
+server:
+  port: 3394
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  redis:
+    database: 9
+    host: ${redis.host}
+    port: ${redis.port}
+    password: ${redis.password}
+    lettuce:
+      pool:
+        min-idle: 0
+        max-active: 8
+        max-idle: 8
+        max-wait: -1ms
+    connect-timeout: 30000ms
+  thymeleaf:
+    cache: false # 开发时关闭缓存,不然没法看到实时页面
+    #模板的模式，支持 HTML, XML TEXT JAVASCRIPT
+    mode: HTML5 # 用非严格的 HTML
+    #编码 可不用配置
+    encoding: UTF-8
+    #内容类别,可不用配置
+    servlet:
+      content-type: text/html
+    prefix: classpath:/static/
+    suffix: .html
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127.0.03306/ryu-pay?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+#    username: root
+#    password: tyb
+    url: jdbc:mysql://${mysql.datasource.host}:${mysql.datasource.port}/${mysql.datasource.db}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+    username: ${mysql.datasource.username}
+    password: ${mysql.datasource.password}
+
+  # #activeMQ配置 ( 注意： activeMQ配置项需在spring的下级 )
+  #  activemq:
+  #    broker-url: failover:(tcp://127.0.0.1:61616?wireFormat.maxInactivityDuration=0)  #连接地址
+  #    in-memory: false # Jeepay项目不可使用内存模式， 需要连接多个消费者。
+  #    user: system # activeMQ默认无需账密认证。 打开认证：activemq.xml添加simpleAuthenticationPlugin标签，账密在credentials.properties文件。
+  #    password: manager
+  #    pool:
+  #      enabled: true
+  #      max-connections: 10
+  #      idle-timeout: 30000  # 空闲的连接过期时间，默认为30秒
+  #
+  #  #rabbitmq配置  ( 注意： rabbitmq配置项需在spring的下级 )
+#  rabbitmq:
+#    addresses: 127.0.0.1:5672
+#    username: guest
+#    password: guest
+#    dynamic: true
+#    virtual-host: /
+#rocketmq:
+#  # 服务地址，多个用逗号分开
+#  name-server: 192.168.10.11:9876
+#  producer:
+#    # 发送消息超时时间，默认3000
+#    send-message-timeout: 30000
+#    # 生产者组
+#    group: pay
+#    # 发送消息失败重试次数，默认2
+#    retryTimesWhenSendFailed: 2
+#    # 异步消息重试此处，默认2
+#    retryTimesWhenSendAsyncFailed: 2
+#    # 消息最大长度，默认1024 * 1024 * 4(默认4M)
+#    maxMessageSize: 4096
+#    # 压缩消息阈值，默认4k(1024 * 4)
+#    compressMessageBodyThreshold: 4096
+#    # 是否在内部发送失败时重试另一个broker，默认false
+#    retryNextServer: false
+## rocketmq配置 ( 注意：rocketmq配置项请放置到根目录， 不是spring的二级配置！  )
+#rocketmq:
+#  name-server: 127.0.0.1:9876
+#  producer:
+#    group: JEEPAY-GROUP
+
+## 阿里云rocketmq配置 ( 注意：aliyun-rocketmq配置项请放置到根目录， 不是spring的二级配置！需要阿里云开通rocketMQ产品，创建Group和Topic  )
+#aliyun-rocketmq:
+#  namesrvAddr: xxx
+#  accessKey: xxx
+#  secretKey: xxx
+#  groupId: GID_JEEPAY_T
+
+
+#系统业务参数
+isys:
+  mq:
+    vender: activeMQ  #  切换MQ厂商， 支持：【 activeMQ  rabbitMQ  rocketMQ  aliYunRocketMQ 】， 需正确配置 【对应的yml参数】 和 【pom.xml中的依赖包】。
+
+mybatis-plus:
+  type-aliases-package: com.dicomclub.paysystem.module.**.entity
+  # xxxMapper.xml 路径
+  mapper-locations: classpath*:com/dicomclub/paysystem/module/**/mapper/**/*.xml
+
+file:
+  ROOT_PATH: ${user.home}/.files
+
+
+secure:
+  ignore:
+    urls: #配置白名单路径
+    - "/user/login"
+    - "/user/logout"
+    - "/qc/rectify/info"
+    - "/file/getFile"
+    - "/swagger-ui/"
+    - "/swagger-ui/**"
+    - "/webjars/**"
+    - "/swagger-resources/**"
+    - "/static/**"
+    - "/v2/api-docs"
+    - "/v3/api-docs"
+    - "/*.html"
+    - "/**/*.html"
+    - "/**/*.css"
+    - "/**/*.js"
+    - "/**/*.txt"
+    - "/error"
+    - "/**/*.md"
+    - "/**/*.png"
+    - "/**/*.rar"
+# 集成微服务的时候需要关掉安全拦截
+  enable: true
+# 是否严格:开启资源拦截智能处理(就是没添加资源的不用校验)
+  resource-interception:
+    strict: false
+
+
+
+system:
+  appId: 63e9a54bcc82bf7f489fb1c4
+  orgCode: 10004
+  payGate: http://localhost:3393/shadow/pay
+  payType: ALIPAY
+  cashierUrl: http://192.168.200.123:16000/#/cashierDesk?payOrderId=   #测试环境
+#  cashierUrl:  http://192.168.168.11:7789/#/cashierDesk?payOrderId=   #马军丽
