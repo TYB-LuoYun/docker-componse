@@ -104,13 +104,13 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker
 
   **默认安装了可视化工具portainer,访问19000端口**
 
-![](doc\img\image-20230928151349125.png)
+![](./doc/img/image-20230928151349125.png)
 
 - 如果需要修改配置比如端口，密码，进入对应目录，修改配置
 
   比如mysql，进入对应的docker-compose.yml文件，运行`vi docker-compose.yml `修改端口和密码
 
-  ![](doc\img\image-20230928151841159.png)
+  ![](./doc/img/image-20230928151841159.png)
 
 - 对于基础服务持久化数据/日志的位置，在/data目录， `cd /data`
 
