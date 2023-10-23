@@ -70,15 +70,15 @@
 
 ### docker compose 安装
 
-1. 下载
+1. 下载（建议手动下）
 ```
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
     版本号参考 https://github.com/docker/compose/tags
-> 如果是手动下载 ，去 https://github.com/docker/compose/tags 下
-> 然后移动修改文件名
-      cp /opt/docker/docker-compose-linux-x86_64 /usr/local/bin 
-      mv docker-compose-linux-x86_64 docker-compose
+> 如果是手动下载 ，去 https://github.com/docker/compose/releases/tag/v2.22.0下载[docker-compose-linux-x86_64](https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-linux-x86_64)
+> 然后上传到linux，在当前目录移动修改文件名
+      cp   ./docker-compose-linux-x86_64  /usr/local/bin 
+      mv  /usr/local/bin/docker-compose-linux-x86_64   docker-compose
 
 2. 授权
     sudo chmod +x /usr/local/bin/docker-compose
@@ -98,7 +98,7 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker
   docker-compose -f master-docker-compose.yml up -d
   ```
 
-  启动后，放行端口: 默认mysql 3306,redis 6379 ,rabbitMq 15672,nginx 80,nacos 8848 ，如果访问不了请放行端口。
+  启动后，放行端口: 默认mysql 25003->3306,redis 25001->6379 ,rabbitMq 5672&15672,nginx 80,nacos 8848 ，如果访问不了请放行端口。
 
   放行端口命令:`firewall-cmd --zone=public --add-port=端口/tcp --permanent` 放行后重启防火墙`firewall-cmd --reload`
 
@@ -114,12 +114,40 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker
 
 - 对于基础服务持久化数据/日志的位置，在/data目录， `cd /data`
 
+  
+
+## Jar服务部署
+
+> 首先确认nacos配置导入，确认sql的数据初始化
+>
+> 接下来，一键启动服务了
+
+1. 进入主目录，下面是目录结构
+
+   docker-service
+   ├─services -- 存放jar服务
+   │  ├─...  -- 具体服务的文件夹，存放jar包和配置文件 
+   ├─Dockerfile  -- 通用的jar镜像构建文件 
+   ├─.env             -- 环境文件
+   ├─ master-docker-compose.yml   --编排启动文件
+
+  
+
+2. 启动所有jar服务
+
+   docker-compose -f master-docker-compose.yml up -d
+
 ## 相关命令
 
 - 启动所有jar服务
 
-​      docker-compose -f master-docker-componse.yml up -d
-​      或docker-compose -f master-docker-componse.yml up -d --build  #上传了新的jar包
+  docker-compose -f master-docker-compose.yml up -d
+
+>  如果上传了新的jar包
+>
+> docker-compose -f master-docker-compose.yml down
+>
+> docker-compose -f master-docker-compose.yml up -d --build  
 
 - 停止所有jar服务
 
@@ -127,12 +155,21 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker
 
 - 启动某个服务
 
-​    docker-compose -f master-docker-componse.yml up ryu-pay
-​    或 docker-compose -f master-docker-componse.yml up ryu-pay --build
+​      docker-compose -f master-docker-compose.yml up ryu-pay
+
+> 如果上传了新的jar包
+>
+> docker-compose -f master-docker-compose.yml down ryu-pay
+>
+> docker-compose -f master-docker-compose.yml up ryu-pay --build
 
 - 停止某个服务
 
-​    docker-compose -f master-docker-componse.yml stop ryu-pay
+​    docker-compose -f master-docker-compose.yml stop ryu-pay
+
+- 查看某服务的日志
+
+  docker logs  容器名
 
 ## 离线安装
 

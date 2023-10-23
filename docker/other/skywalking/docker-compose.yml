@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  elasticsearch:
+    image: elastic/elasticsearch:${ELASTICSEARCH_VERSION}
+    container_name: elasticsearch
+    networks:
+      - skywalking
+    restart: always
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Shanghai
+
+  oap:
+    image: apache/skywalking-oap-server:${SKYWALKING_VERISON}
+    container_name: oap
+    networks:
+      - skywalking
+    restart: always
+    ports:
+      - "11800:11800"
+      - "12800:12800"
+    healthcheck:
+      test: ["CMD-SHELL", "/skywalking/bin/swctl"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    environment:
+      TZ: Asia/Shanghai
+      SW_STORAGE: elasticsearch
+      SW_STORAGE_ES_CLUSTER_NODES: elasticsearch:9200
+    volumes:
+      - ./config/application.yaml:/skywalking/config/application.yml
+    depends_on:
+      - elasticsearch
+  ui:
+    image: apache/skywalking-ui:${SKYWALKING_VERISON}
+    container_name: ui
+    networks:
+      - skywalking
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+      SW_OAP_ADDRESS: http://oap:12800
+    depends_on:
+      - oap
+
+networks:
+  skywalking:
+    name: skywalking
+    driver: bridge

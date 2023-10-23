@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+  nacos:
+    image: nacos/nacos-server:v2.0.4-slim
+#    image: nacos/nacos-server:1.2.1
+    container_name: nacos
+    # network_mode: host
+    ports:
+      - 8848:8848
+      - 9848:9848
+      - 9849:9849
+    environment:
+      - MODE=standalone #启动模式是独立模式
+    restart: always
+    volumes:
+      - /data/nacos/log:/home/nacos/logs
+      - /data/nacos/data:/home/nacos/data
+      - ./custom.properties:/home/nacos/init.d/custom.properties
