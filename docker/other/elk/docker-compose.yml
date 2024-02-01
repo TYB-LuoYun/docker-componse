@@ -14,6 +14,7 @@ services:
     environment:
       # cluster.name: "elasticsearch"  # es 名称
        ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    restart: always
     volumes:
       #- ~/data/es:/usr/share/elasticsearch/data
       - ./config/es/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
@@ -25,12 +26,34 @@ services:
     #network_mode: host # 公用主机的网络
     networks:
       - elastic
+    restart: always
     volumes:
       - ./config/kibana/kibana.yml:/opt/kibana/config/kibana.yml
     ports:
       - 5601:5601
     depends_on:
       - elasticsearch # 依赖es启动
+
+  logtash:
+    image: logstash:7.10.1
+    container_name: logstash
+    restart: always
+    networks:
+      - elastic
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+      - "4560:4560"
+    volumes:
+#      - /opt/logstash/config/:/usr/share/logstash/config/
+      - /opt/logstash/pipeline/:/usr/share/logstash/pipeline/
+    environment:
+      - TZ="Asia/Shanghai"
+      - XPACK_MONITORING_ENABLED="false"
+      - xpack.monitoring.elasticsearch.hosts="http://127.0.0.1:9200"
+ ##启动,重新构建 docker-compose /opt/logstash/docker-compose.yml up --build -d
+
+
 networks:
   elastic:
     name: elastic

@@ -1,3 +1,0 @@
-http.host: 0.0.0.0
-xpack.monitoring.elasticsearch.url: http://192.168.99.100:9200
-xpack.monitoring.enabled: "false"
